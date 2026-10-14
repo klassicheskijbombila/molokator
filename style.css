@@ -1,0 +1,67 @@
+:root{
+  --white:#fff;
+  --milk:#FFF7F9;
+  --black:#161616;
+  --pink:#FF7BAC;
+  --pink-soft:#FFD3E2;
+  --gray:#6b6b6b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  background:var(--milk);color:var(--black);
+  display:flex;flex-direction:column;
+}
+.topbar{
+  padding:14px 16px calc(10px);
+  background:linear-gradient(135deg,var(--white),var(--pink-soft));
+  border-bottom:3px solid var(--black);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  font-size:30px;background:var(--white);border:3px solid var(--black);
+  border-radius:16px;padding:6px 9px;box-shadow:3px 3px 0 var(--pink);
+}
+h1{margin:0;font-size:22px;letter-spacing:-.4px}
+.topbar p{margin:2px 0 0;font-size:12px;color:var(--gray)}
+main{flex:1;display:flex;flex-direction:column;min-height:0}
+#map{flex:1;min-height:45vh;background:#eaeaea}
+.panel{
+  background:var(--white);border-top:3px solid var(--black);
+  padding:14px 16px calc(16px + env(safe-area-inset-bottom));
+  max-height:46vh;overflow:auto;
+}
+.search{display:flex;gap:8px;margin-bottom:10px}
+input{
+  flex:1;border:3px solid var(--black);border-radius:14px;
+  padding:12px 14px;font-size:16px;background:var(--milk);
+}
+button{
+  border:3px solid var(--black);border-radius:14px;padding:12px 14px;
+  font-size:15px;font-weight:700;background:var(--white);cursor:pointer;
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+button:active{transform:translate(2px,2px)}
+.primary{background:var(--pink);color:var(--black);box-shadow:3px 3px 0 var(--black)}
+.ghost{background:var(--milk)}
+.actions{display:flex;gap:8px;margin-bottom:12px}
+.actions .primary{flex:1}
+.status{font-size:14px;color:var(--gray);margin-bottom:10px}
+.results{display:grid;gap:10px}
+.card{
+  border:3px solid var(--black);border-radius:16px;background:var(--milk);
+  padding:12px;box-shadow:3px 3px 0 var(--pink-soft);
+}
+.card h3{margin:0 0 4px;font-size:16px}
+.card p{margin:2px 0;font-size:13px;color:var(--gray)}
+.card a{
+  display:inline-block;margin-top:8px;text-decoration:none;color:var(--black);
+  background:var(--pink);border:2px solid var(--black);border-radius:10px;
+  padding:7px 10px;font-weight:700;font-size:13px;
+}
+@media(min-width:760px){
+  main{flex-direction:row}
+  #map{flex:1;min-height:100vh}
+  .panel{width:390px;max-height:100vh;border-top:0;border-left:3px solid var(--black)}
+}

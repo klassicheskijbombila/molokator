@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Молокатор — найди молоко рядом</title>
+<meta name="description" content="Молокатор помогает найти магазины, рынки и фермерские точки, где можно купить молоко.">
+<meta name="theme-color" content="#FF7BAC">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">🐮</span>
+    <div>
+      <h1>Молокатор</h1>
+      <p>Найди молоко рядом</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="map"></div>
+
+  <section class="panel">
+    <form id="search-form" class="search">
+      <input id="city" type="search" placeholder="Город: Москва, Казань…" autocomplete="off">
+      <button type="submit" aria-label="Найти">🔍</button>
+    </form>
+
+    <div class="actions">
+      <button id="nearby" class="primary">🐮 Я рядом с коровой</button>
+      <button id="radius" class="ghost">Радиус: 1 км</button>
+    </div>
+
+    <div id="status" class="status">Выбери город или нажми «Я рядом с коровой».</div>
+    <div id="results" class="results"></div>
+  </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
