@@ -1,6 +1,6 @@
 {
-  "name": "Молокатор",
-  "short_name": "Молокатор",
+  "name": "молокатор",
+  "short_name": "молокатор",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
