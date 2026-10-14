@@ -5,9 +5,8 @@
   --milk: #fff8fc;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -16,47 +15,30 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
 
-[hidden] {
-  display: none !important;
-}
-
-/* элементы управления, включая ios */
-button,
-input {
-  font: inherit;
-}
+/* явный цвет текста для ios */
+button, input { font: inherit; }
 
 button {
   color: var(--ink);
   -webkit-appearance: none;
   appearance: none;
+  background: white;
   border: 2px solid var(--ink);
   border-radius: 17px;
-  background: white;
   padding: 13px 15px;
   font-weight: 650;
   cursor: pointer;
 }
 
-button:hover {
-  background: #ffe4f5;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-button:focus-visible,
-input:focus-visible {
+button:hover { background: #ffe4f5; }
+button:disabled { opacity: 0.6; cursor: wait; }
+button:focus-visible, a:focus-visible, input:focus-visible {
   outline: 3px solid #b83288;
   outline-offset: 3px;
 }
 
-.pink {
-  background: var(--pink);
-  box-shadow: 3px 3px var(--ink);
-}
+.pink { background: var(--pink); box-shadow: 3px 3px var(--ink); }
+.wide { width: 100%; font-size: 13px; }
 
 /* стартовый экран */
 #welcome {
@@ -65,17 +47,12 @@ input:focus-visible {
   place-items: center;
   padding: 32px 24px;
   background:
-    radial-gradient(ellipse at 0% 0%, #e9dce7 0, transparent 35%),
-    radial-gradient(ellipse at 100% 90%, #f8d8ed 0, transparent 40%),
+    radial-gradient(ellipse at 0% 0%, #e9dce7, transparent 35%),
+    radial-gradient(ellipse at 100% 90%, #f8d8ed, transparent 40%),
     var(--milk);
 }
 
-.intro {
-  width: 100%;
-  max-width: 410px;
-  text-align: center;
-}
-
+.intro { width: 100%; max-width: 410px; text-align: center; }
 .cow {
   display: inline-grid;
   place-items: center;
@@ -88,17 +65,11 @@ input:focus-visible {
   box-shadow: 4px 4px var(--pink);
 }
 
-h1 {
-  font-size: clamp(38px, 10vw, 53px);
-  letter-spacing: -2px;
-  margin: 20px 0 0;
-}
-
-.tagline {
-  color: #a54484;
-  margin: 5px 0 24px;
-  font-size: 19px;
-}
+h1 { font-size: clamp(38px, 10vw, 53px); letter-spacing: -2px; margin: 20px 0 0; }
+.tagline { color: #a54484; margin: 5px 0 24px; font-size: 19px; }
+.intro button { width: 100%; }
+.intro small { display: block; color: #776775; font-size: 12px; margin: 9px 0 17px; }
+.footer { font-size: 12px; color: #796c77; line-height: 1.6; text-align: center; margin: 22px 0 0; }
 
 .preview {
   height: 180px;
@@ -121,15 +92,10 @@ h1 {
   transform: rotate(-25deg);
 }
 
-.street-one { top: 25%; }
-.street-two { top: 70%; }
-.street-three {
-  top: 40%;
-  transform: rotate(65deg);
-}
-
-.dot,
-.pin {
+.one { top: 25%; }
+.two { top: 70%; }
+.three { top: 40%; transform: rotate(65deg); }
+.dot, .pin {
   width: 28px;
   height: 28px;
   background: var(--pink);
@@ -138,12 +104,8 @@ h1 {
   transform: rotate(-45deg);
 }
 
-.dot {
-  position: absolute;
-}
-
-.dot::after,
-.pin::after {
+.dot { position: absolute; }
+.dot::after, .pin::after {
   content: "";
   position: absolute;
   width: 8px;
@@ -154,10 +116,9 @@ h1 {
   left: 8px;
 }
 
-.dot-one { left: 22%; top: 30%; }
-.dot-two { left: 52%; top: 48%; }
-.dot-three { left: 76%; top: 18%; }
-
+.first { left: 22%; top: 30%; }
+.second { left: 52%; top: 48%; }
+.third { left: 76%; top: 18%; }
 .preview-label {
   position: absolute;
   bottom: 12px;
@@ -171,37 +132,8 @@ h1 {
   font-size: 13px;
 }
 
-.lead {
-  font-size: 15px;
-  margin: 23px 0 17px;
-}
-
-.intro button {
-  width: 100%;
-}
-
-.intro small {
-  display: block;
-  color: #776775;
-  font-size: 12px;
-  margin: 9px 0 17px;
-}
-
-.footer {
-  font-size: 12px;
-  color: #796c77;
-  line-height: 1.6;
-  text-align: center;
-  margin: 22px 0 0;
-}
-
-/* основной экран */
-#app {
-  height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
-
+/* карта и панель */
+#app { height: 100svh; display: flex; flex-direction: column; }
 header {
   display: flex;
   align-items: center;
@@ -211,66 +143,21 @@ header {
   border-bottom: 2px solid;
 }
 
-#home {
-  font-size: 25px;
-  box-shadow: 3px 3px var(--pink);
-  padding: 8px 11px;
-}
-
-h2 {
-  margin: 0;
-  font-size: 23px;
-  letter-spacing: -0.5px;
-}
-
-header span {
-  font-size: 13px;
-  color: #a54484;
-}
-
-main {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-}
-
-#map {
-  flex: 1;
-  min-width: 0;
-  background: var(--milk);
-}
-
+#home { font-size: 25px; box-shadow: 3px 3px var(--pink); padding: 8px 11px; }
+h2 { margin: 0; font-size: 23px; letter-spacing: -0.5px; }
+header span { font-size: 13px; color: #a54484; }
+main { display: flex; flex: 1; min-height: 0; }
+#map { flex: 1; min-width: 0; background: var(--milk); }
 #map .leaflet-tile-pane {
   filter: grayscale(1) brightness(1.04) contrast(0.88) sepia(0.12) hue-rotate(280deg);
 }
 
-aside {
-  width: 410px;
-  overflow: auto;
-  border-left: 2px solid;
-  padding: 18px;
-  background: var(--milk);
-}
-
-form,
-.actions {
-  display: flex;
-  gap: 8px;
-}
-
-form button {
-  white-space: nowrap;
-  font-size: 13px;
-  padding: 12px 10px;
-}
-
-.actions {
-  margin: 12px 0;
-}
-
+aside { width: 410px; overflow: auto; border-left: 2px solid; padding: 18px; }
+form, .actions { display: flex; gap: 8px; }
+form button { white-space: nowrap; font-size: 13px; padding: 12px 10px; }
+.actions { margin: 12px 0; }
 #near { flex: 1; }
-
-input {
+input:not([type="checkbox"]) {
   min-width: 0;
   width: 100%;
   border: 2px solid var(--ink);
@@ -281,78 +168,37 @@ input {
   font-size: 16px;
 }
 
-.wide {
-  width: 100%;
-  font-size: 13px;
-}
+fieldset { margin: 14px 0; border: 2px solid; border-radius: 17px; background: white; padding: 12px; }
+legend { font-size: 13px; padding: 0 6px; }
+fieldset label { display: flex; gap: 10px; align-items: center; padding: 7px 0; font-size: 14px; cursor: pointer; }
+input[type="checkbox"] { accent-color: #b83288; width: 20px; height: 20px; margin: 0; flex: 0 0 20px; }
+#status, .hint { font-size: 13px; line-height: 1.6; color: #705a6b; }
+.card { background: white; border: 2px solid; border-radius: 21px; padding: 16px; margin: 14px 0; box-shadow: 3px 3px #eec8e0; }
+.card h3 { margin: 0 0 7px; font-size: 17px; }
+.card p { margin: 6px 0; color: #73616e; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.card button { font-size: 12px; padding: 8px 11px; border-radius: 12px; background: #ffddf2; margin: 6px 5px 0 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
-#status {
-  font-size: 13px;
-  line-height: 1.6;
-  color: #705a6b;
-}
-
-.card {
-  background: white;
-  border: 2px solid;
-  border-radius: 21px;
-  padding: 16px;
-  margin: 14px 0;
-  box-shadow: 3px 3px #eec8e0;
-}
-
-.card h3 {
-  margin: 0 0 7px;
-  font-size: 17px;
-}
-
-.card p {
-  margin: 6px 0;
-  color: #73616e;
-  font-size: 13px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-
-.card a,
-.card button {
-  display: inline-block;
-  font-size: 12px;
-  padding: 8px 11px;
-  border: 1.5px solid;
-  border-radius: 12px;
-  background: #ffddf2;
+/* выбор карт */
+dialog {
+  width: min(440px, calc(100% - 32px));
+  max-height: 85svh;
+  overflow: auto;
+  border: 2px solid var(--ink);
+  border-radius: 24px;
+  padding: 24px;
+  background: var(--milk);
   color: var(--ink);
-  text-decoration: none;
-  margin: 6px 5px 0 0;
 }
 
-.card button { background: white; }
+dialog::backdrop { background: #201b2066; }
+#providers { display: grid; gap: 10px; margin: 18px 0; }
+#providers a { color: var(--ink); text-decoration: none; background: white; border: 2px solid; border-radius: 16px; padding: 14px; font-weight: 650; }
 
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-
-/* мобильная версия */
 @media (max-width: 700px) {
   header { padding: 10px 14px; }
   main { flex-direction: column; }
-
-  #map {
-    flex: none;
-    height: 45%;
-    min-height: 180px;
-  }
-
-  aside {
-    width: 100%;
-    flex: 1;
-    border-left: 0;
-    border-top: 2px solid;
-    padding: 14px 14px calc(16px + env(safe-area-inset-bottom));
-  }
+  #map { flex: none; height: 45%; min-height: 180px; }
+  aside { width: 100%; flex: 1; border-left: 0; border-top: 2px solid; padding: 14px 14px calc(16px + env(safe-area-inset-bottom)); }
+  dialog { margin: auto 0 0; width: 100%; max-width: none; border-radius: 24px 24px 0 0; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
 }

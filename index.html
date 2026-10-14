@@ -12,22 +12,21 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <!-- стартовый экран -->
     <section id="welcome">
       <div class="intro">
         <div class="cow" aria-hidden="true">🐮</div>
         <h1>молокатор</h1>
         <p class="tagline">ничего не пропадёт</p>
         <div class="preview" role="img" aria-label="декоративная мини-карта">
-          <span class="street street-one"></span>
-          <span class="street street-two"></span>
-          <span class="street street-three"></span>
-          <i class="dot dot-one"></i>
-          <i class="dot dot-two"></i>
-          <i class="dot dot-three"></i>
+          <span class="street one"></span>
+          <span class="street two"></span>
+          <span class="street three"></span>
+          <i class="dot first"></i>
+          <i class="dot second"></i>
+          <i class="dot third"></i>
           <span class="preview-label">молоко где-то рядом</span>
         </div>
-        <p class="lead">осталось выяснить — где</p>
+        <p>осталось выяснить — где</p>
         <button id="start-near" class="pink" type="button">муууу, где молоко?</button>
         <small>найти магазины рядом со мной</small>
         <button id="start-city" type="button">сменить пастбище</button>
@@ -36,10 +35,9 @@
       </div>
     </section>
 
-    <!-- карта и результаты -->
     <div id="app" hidden>
       <header>
-        <button id="home" type="button" title="в стойло" aria-label="на стартовый экран">🐮</button>
+        <button id="home" type="button" aria-label="на стартовый экран">🐮</button>
         <div>
           <h2>молокатор</h2>
           <span>ничего не пропадёт</span>
@@ -49,25 +47,36 @@
         <div id="map" aria-label="карта магазинов"></div>
         <aside>
           <form id="search">
-            <label class="sr-only" for="city">город в россии</label>
+            <label class="sr" for="city">город в россии</label>
             <input id="city" placeholder="где будем пастись?" required>
-            <button type="submit" title="найти город">муууу-поиск</button>
+            <button type="submit">муууу-поиск</button>
           </form>
+          <fieldset id="categories">
+            <legend>где ищем молоко</legend>
+            <label><input id="grocery" type="checkbox" checked>продуктовые магазины</label>
+            <label><input id="farm" type="checkbox" checked>фермерские магазины/рынки</label>
+          </fieldset>
           <div class="actions">
-            <button id="near" class="pink" type="button" title="использовать моё местоположение">муууу рядом?</button>
-            <button id="radius" type="button" title="изменить радиус поиска">выпас: 1 км</button>
+            <button id="near" class="pink" type="button">муууу рядом?</button>
+            <button id="radius" type="button">выпас: 1 км</button>
           </div>
-          <button id="area" class="wide" type="button" title="искать в центре карты">пасти здесь</button>
+          <button id="area" class="wide" type="button">пасти здесь</button>
           <p id="status" role="status" aria-live="polite">выбери город или найди магазины рядом</p>
           <button id="retry" class="wide" type="button" hidden>ещё раз мукнуть</button>
           <div id="results"></div>
-          <p class="footer">
-            точки из OpenStreetMap · наличие молока не проверено<br>
-            расстояния указаны по прямой
-          </p>
+          <p class="footer">точки из OpenStreetMap · наличие молока не проверено<br>расстояния по прямой</p>
         </aside>
       </main>
     </div>
+
+    <dialog id="routes" aria-labelledby="route-heading">
+      <h2 id="route-heading">молочный путь</h2>
+      <p>с кем пойдём за молоком?</p>
+      <p id="destination"></p>
+      <nav id="providers" aria-label="выбор карт"></nav>
+      <p class="hint">начальную точку определят выбранные карты или предложат ввести её вручную</p>
+      <button id="close-routes" class="wide" type="button">закрыть</button>
+    </dialog>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
   </body>
