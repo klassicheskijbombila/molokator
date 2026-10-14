@@ -1,4 +1,4 @@
-const CACHE = 'molokator-v11.1';
+const CACHE = 'molokator-v11.2';
 const ASSETS = [
   './',
   './index.html',
