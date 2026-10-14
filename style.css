@@ -65,3 +65,11 @@ button:active{transform:translate(2px,2px)}
   #map{flex:1;min-height:100vh}
   .panel{width:390px;max-height:100vh;border-top:0;border-left:3px solid var(--black)}
 }
+/* Меняем только карту — розовые маркеры сохраняют цвет */
+#map .leaflet-tile-pane {
+  filter: grayscale(1) brightness(1.06) contrast(0.9);
+}
+
+#map {
+  background: #fff7f9;
+}
