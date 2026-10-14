@@ -1,5 +1,4 @@
-// при следующих обновлениях увеличивайте номер версии
-const CACHE = 'molokator-v7';
+const CACHE = 'molokator-v8-farm-routes';
 const ASSETS = [
   './',
   './index.html',
@@ -22,16 +21,13 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(
-        keys
-          .filter((key) => key.startsWith('molokator-') && key !== CACHE)
+        keys.filter((key) => key.startsWith('molokator-') && key !== CACHE)
           .map((key) => caches.delete(key))
       ))
       .then(() => self.clients.claim())
   );
 });
 
-// сначала сеть, кэш интерфейса — при отсутствии связи
-// внешние тайлы карты и запросы поиска здесь не кэшируются
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== 'GET') return;
