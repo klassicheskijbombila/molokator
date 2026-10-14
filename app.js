@@ -1,99 +1,15 @@
-const map = L.map('map',{zoomControl:true}).setView([55.7558,37.6173],10);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  maxZoom:19, attribution:'&copy; OpenStreetMap'
-}).addTo(map);
-
-let markers = L.layerGroup().addTo(map);
-let radiusKm = 1;
-const radii=[1,3,5];
-const statusEl=document.getElementById('status');
-const resultsEl=document.getElementById('results');
-const radiusBtn=document.getElementById('radius');
-
-radiusBtn.addEventListener('click',()=>{
-  radiusKm=radii[(radii.indexOf(radiusKm)+1)%radii.length];
-  radiusBtn.textContent=`Радиус: ${radiusKm} км`;
-});
-
-document.getElementById('search-form').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const q=document.getElementById('city').value.trim();
-  if(!q) return;
-  setStatus('Ищу город…');
-  try{
-    const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=ru&q=${encodeURIComponent(q)}`);
-    const data=await r.json();
-    if(!data.length) return setStatus('Город не найден. Попробуй ещё раз.');
-    const {lat,lon}=data[0];
-    map.setView([+lat,+lon],13);
-    findMilk(+lat,+lon);
-  }catch{
-    setStatus('Не удалось найти город.');
-  }
-});
-
-document.getElementById('nearby').addEventListener('click',()=>{
-  if(!navigator.geolocation) return setStatus('Геолокация не поддерживается.');
-  setStatus('Определяю, где ты…');
-  navigator.geolocation.getCurrentPosition(
-    p=>{const{latitude:lat,longitude:lon}=p.coords;map.setView([lat,lon],14);findMilk(lat,lon);},
-    ()=>setStatus('Не удалось получить геолокацию.'),
-    {enableHighAccuracy:true,timeout:10000}
-  );
-});
-
-async function findMilk(lat,lon){
-  setStatus('Ищу молочные точки… Му!');
-  markers.clearLayers();
-  resultsEl.innerHTML='';
-  const q=`[out:json][timeout:25];
-(
-  nwr["shop"~"supermarket|convenience|grocery|farm|dairy|cheese"](around:${radiusKm*1000},${lat},${lon});
-  nwr["amenity"="marketplace"](around:${radiusKm*1000},${lat},${lon});
-);
-out center 60;`;
-  try{
-    const r=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(q)});
-    const data=await r.json();
-    const places=(data.elements||[]).map(e=>({
-      id:e.id,
-      name:e.tags?.name||'Магазин без названия',
-      lat:e.lat??e.center?.lat,
-      lon:e.lon??e.center?.lon,
-      tags:e.tags||{}
-    })).filter(p=>p.lat&&p.lon);
-    if(!places.length) return setStatus(`В радиусе ${radiusKm} км молоко пока не найдено. Попробуй увеличить радиус.`);
-    places.forEach(p=>{
-      const marker=L.circleMarker([p.lat,p.lon],{
-        radius:9,color:'#161616',weight:3,fillColor:'#FF7BAC',fillOpacity:1
-      }).addTo(markers);
-      marker.bindPopup(`<b>${p.name}</b><br>${p.tags['addr:street']||''} ${p.tags['addr:housenumber']||''}`);
-      const dist=distance(lat,lon,p.lat,p.lon);
-      const card=document.createElement('div');
-      card.className='card';
-      card.innerHTML=`<h3>${p.name}</h3>
-        <p>${[p.tags['addr:street'],p.tags['addr:housenumber']].filter(Boolean).join(', ')||'Адрес не указан'}</p>
-        <p>${dist.toFixed(1)} км • ${openNow(p.tags)?'Вероятно открыто':'Часы работы неизвестны'}</p>
-        <a target="_blank" rel="noopener" href="https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=${lat},${lon};${p.lat},${p.lon}">Маршрут</a>`;
-      resultsEl.appendChild(card);
-      card.addEventListener('click',()=>map.setView([p.lat,p.lon],16));
-    });
-    setStatus(`Найдено точек: ${places.length}. Это продуктовые и фермерские точки из OpenStreetMap.`);
-  }catch{
-    setStatus('Overpass API не ответил. Попробуй позже.');
-  }
-}
-
-function openNow(tags){
-  return Boolean(tags.opening_hours);
-}
-function distance(a,b,c,d){
-  const R=6371,dLat=(c-a)*Math.PI/180,dLon=(d-b)*Math.PI/180;
-  const x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;
-  return 2*R*Math.asin(Math.sqrt(x));
-}
-function setStatus(t){statusEl.textContent=t;}
-
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-}
+const $=id=>document.getElementById(id),say=s=>$('status').textContent=s;
+let map,layer,center,radius=1,version=0,controller,lastCity=0;
+const cityCache=new Map();
+$('start').onclick=()=>{$('welcome').hidden=true;$('app').hidden=false;if(!map){if(!window.L){say('Библиотека карты не загрузилась. Проверь интернет.');return;}map=L.map('map').setView([55.7558,37.6173],11);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);layer=L.layerGroup().addTo(map);}requestAnimationFrame(()=>map.invalidateSize());};
+$('home').onclick=()=>{$('app').hidden=true;$('welcome').hidden=false;};
+function begin(){controller?.abort();controller=new AbortController();layer?.clearLayers();$('results').replaceChildren();return {id:++version,signal:controller.signal};}
+async function request(url,options,t){const c=new AbortController(),cancel=()=>c.abort();t.signal.addEventListener('abort',cancel,{once:true});if(t.signal.aborted)cancel();const timer=setTimeout(cancel,40000);try{const r=await fetch(url,{...options,signal:c.signal});if(!r.ok)throw Error('HTTP '+r.status);return await r.json();}finally{clearTimeout(timer);t.signal.removeEventListener('abort',cancel);}}
+$('search').onsubmit=async e=>{e.preventDefault();if(!map)return;const q=$('city').value.trim();if(!q)return;if(!cityCache.has(q)&&Date.now()-lastCity<1500){say('Подожди секунду.');return;}const t=begin();say('Ищу город…');try{let data=cityCache.get(q);if(!data){lastCity=Date.now();data=await request('https://nominatim.openstreetmap.org/search?'+new URLSearchParams({format:'json',limit:'1',countrycodes:'ru','accept-language':'ru',q}),{},t);cityCache.set(q,data);}if(t.id!==version)return;if(!data.length){say('Город не найден.');return;}const lat=+data[0].lat,lon=+data[0].lon;map.setView([lat,lon],14);await find(lat,lon,t);}catch(e){if(t.id===version){console.error(e);say('Не удалось найти город. Повтори позже.');}}};
+$('near').onclick=()=>{if(!map)return;const t=begin();if(!navigator.geolocation){say('Геолокация недоступна. Введи город.');return;}say('Определяю местоположение…');navigator.geolocation.getCurrentPosition(p=>{if(t.id!==version)return;const {latitude:lat,longitude:lon}=p.coords;map.setView([lat,lon],14);find(lat,lon,t);},()=>{if(t.id===version)say('Разреши геолокацию или введи город.');},{timeout:15000,maximumAge:60000});};
+$('radius').onclick=()=>{radius=radius===1?3:radius===3?5:1;$('radius').textContent=radius+' км';if(center)find(center.lat,center.lon,begin());};
+$('area').onclick=()=>{if(map){const p=map.getCenter();find(p.lat,p.lng,begin());}};
+async function find(lat,lon,t){center={lat,lon};const km=radius;say('Ищу молочные места… Му!');let data;try{const q=`[out:json][timeout:25];(nwr["shop"~"^(supermarket|convenience|grocery|farm|dairy|cheese)$"](around:${km*1000},${lat},${lon});nwr["amenity"="marketplace"](around:${km*1000},${lat},${lon}););out center;`;data=await request('https://overpass-api.de/api/interpreter',{method:'POST',body:new URLSearchParams({data:q})},t);if(data.remark||!Array.isArray(data.elements))throw Error(data.remark||'Неверный ответ');}catch(e){if(t.id===version){console.error(e);say('Точки не загрузились: сервер занят или нет связи. Уменьши радиус или повтори позже.');}return;}if(t.id!==version)return;try{const places=data.elements.map(e=>({lat:e.lat??e.center?.lat,lon:e.lon??e.center?.lon,t:e.tags||{}})).filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)).map(p=>({...p,d:dist(lat,lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d);const frag=document.createDocumentFragment(),group=L.layerGroup();for(const p of places){const name=p.t.name||p.t.brand||'Магазин без названия',addr=[p.t['addr:street'],p.t['addr:housenumber']].filter(Boolean).join(', ')||'Адрес не указан',popup=document.createElement('div');text(popup,'strong',name);text(popup,'p',addr);const marker=L.marker([p.lat,p.lon],{icon:L.divIcon({className:'',html:'<div class="pin"></div>',iconSize:[28,28],iconAnchor:[14,28]})}).bindPopup(popup).addTo(group);const card=document.createElement('article');card.className='card';text(card,'h3',name);text(card,'p',addr);text(card,'p',(p.d<1?Math.round(p.d*1000)+' м':p.d.toFixed(1)+' км')+' по прямой');text(card,'p',p.t.opening_hours?'Часы работы: '+p.t.opening_hours:'Часы работы неизвестны');const a=document.createElement('a');a.textContent='Маршрут';a.target='_blank';a.rel='noopener noreferrer';a.href=`https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=${lat},${lon};${p.lat},${p.lon}`;a.onclick=e=>e.stopPropagation();card.append(a);card.onclick=()=>{map.setView([p.lat,p.lon],16);marker.openPopup();};frag.append(card);}layer.clearLayers();group.eachLayer(l=>layer.addLayer(l));$('results').replaceChildren(frag);say(places.length?`Му рядом: ${places.length} точек. Наличие молока не проверено.`:`В радиусе ${km} км точки в OpenStreetMap не найдены.`);}catch(e){console.error(e);layer.clearLayers();$('results').replaceChildren();say('Ошибка отображения полученных данных.');}}
+function text(parent,tag,value){const el=document.createElement(tag);el.textContent=value;parent.append(el);}
+function dist(a,b,c,d){const r=Math.PI/180,x=Math.sin((c-a)*r/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2;return 12742*Math.asin(Math.sqrt(Math.min(1,Math.max(0,x))));}
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(r=>r.update()).catch(console.warn));
